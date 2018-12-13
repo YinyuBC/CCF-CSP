@@ -1,0 +1,8 @@
+n,L,t = list(map(int,input().split()))
+pos_start = list(map(int,input().split()))
+
+pos_end_disordered = list(map(lambda x: min((x+t)%(2*L),-(x+t)%(2*L)),pos_start))
+dict = dict(zip(sorted(pos_start),sorted(pos_end_disordered)))
+pos_end_ordered = [dict[ball] for ball in pos_start]
+
+print(' '.join(map(str,pos_end_ordered)))
