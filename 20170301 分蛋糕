@@ -1,0 +1,12 @@
+n,k = list(map(int,input().split()))
+li = list(map(int,input().split()))
+ans = 0
+weight = 0
+
+for cake in li[:-1]:
+    weight += cake
+    if weight >= k:
+        weight = 0
+        ans += 1
+
+print(min(ans+1,n))
