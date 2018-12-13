@@ -1,0 +1,19 @@
+N,K= list(map(int,input().split()))
+event = []
+
+for i in range(K):
+    w,s,c = list(map(int,input().split()))
+    event.append([w,s,-1])
+    event.append([w,s+c,+1])
+
+# 排序这个坑挖的好深！
+event.sort(key=lambda x: (x[1],-x[-1],x[0]))
+box = list(range(1,N+1))
+
+for i in event:
+    if i[-1] == -1:
+        box[box.index(i[0])] = 0
+    elif i[-1] == 1:
+        box[box.index(0)] = i[0]
+
+print(' '.join(map(str,box)))
