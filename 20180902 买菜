@@ -1,0 +1,23 @@
+H = []
+W = []
+n = int(input())
+for i in range(n):
+    H.append(tuple(map(int,input().split())))
+for i in range(n):
+    W.append(tuple(map(int,input().split())))
+
+ans = 0
+i,j = 0,0
+while(i < n and j < n):
+    if W[j][1] <= H[i][0]:
+        j += 1
+    elif H[i][0] < W[j][1] <= H[i][1]:
+        ans += W[j][1] - max(H[i][0],W[j][0])
+        j += 1
+    elif W[j][0] < H[i][1] < W[j][1]:
+        ans += H[i][1] - max(H[i][0],W[j][0])
+        i += 1
+    elif H[i][1] <= W[j][0]:
+        i += 1
+
+print(ans)
