@@ -1,0 +1,15 @@
+T = int(input())
+
+x_axis = [x+3500 for x in [0,1500,4500,9000,35000,55000,80000,200000]]
+x_axis.insert(0,0)
+tax_rate = [x/100 for x in [0,3,10,20,25,30,35,45]]
+tax_segement = [tax_rate[i] * (x_axis[i+1]-x_axis[i]) for i in range(0,len(x_axis)-1)]
+y_axis = [x_axis[i]-sum(tax_segement[0:i]) for i in range(1,len(x_axis))]
+y_axis.insert(0,0)
+
+for i in range(len(x_axis)-1):
+    if y_axis[i] < T <= y_axis[i+1]:
+        S = (T - y_axis[i]) / (1 - tax_rate[i]) + x_axis[i]
+
+S = 100*round(S/100)
+print(S)
