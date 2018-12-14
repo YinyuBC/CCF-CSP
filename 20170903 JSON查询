@@ -1,0 +1,21 @@
+n,m = map(int,input().split())
+
+json_str = ''
+for _ in range(n):
+    json_str += input()
+
+data = eval(json_str)
+
+queries = []
+for _ in range(m):
+    queries.append(input().split('.'))
+
+for q in queries:
+    try:
+        value = eval('data' + ''.join(['[' + repr(item) + ']' for item in q]))
+        if type(value) == str:
+            print('STRING',value)
+        elif type(value) == dict:
+            print('OBJECT')
+    except:
+        print('NOTEXIST')
