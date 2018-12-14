@@ -1,0 +1,11 @@
+n = int(input())
+m = int(input())
+queue = list(range(1,n+1))
+
+for event in range(m):
+    stu,change = map(int,input().split())
+    pos = queue.index(stu) + change
+    queue.remove(stu)
+    queue.insert(pos,stu)
+
+print(' '.join(map(str,queue)))
