@@ -1,0 +1,38 @@
+n = int(input())
+sec = list(map(int,input().split()))
+memory = set()
+
+def dfs(path, n, i):
+    if i == n:
+        if (path[i-2] + path[i-1])//2 == sec[i-1]:
+            print(' '.join(map(str, path)))
+            quit()
+        return
+
+    elif i >= 1 and path[i-1] < 1:
+        return
+
+    elif i >= 2 and (i,path[i-2],path[i-1]) in memory:
+        return
+
+    elif i == 0:
+        for j in range(2*sec[0]+1):
+            path.append(j)
+            dfs(path[:],n,i+1)
+            path.pop()
+
+    elif i == 1:
+        for j in range(2):
+            path.append(2*sec[i-1]+j-path[i-1])
+            dfs(path[:],n,i+1)
+            path.pop()
+
+    else:
+        memory.add((i, path[i-2], path[i-1]))
+
+        for j in range(3):
+            path.append(3*sec[i-1]+j-(path[i-2]+path[i-1]))
+            dfs(path[:],n,i+1)
+            path.pop()
+
+dfs([],n,0)
