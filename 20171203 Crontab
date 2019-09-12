@@ -1,0 +1,138 @@
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
+#include <cctype>
+
+using namespace std;
+typedef long long ll;
+
+unordered_map<string, int> name2num = {
+	{"jan", 1}, {"feb", 2}, {"mar", 3}, {"apr", 4},
+	{"may", 5}, {"jun", 6}, {"jul", 7}, {"aug", 8},
+	{"sep", 9}, {"oct", 10}, {"nov", 11}, {"dec", 12},
+    {"sun", 0}, {"mon", 1}, {"tue", 2}, {"wed", 3},     
+	{"thu", 4}, {"fri", 5}, {"sat", 6}
+};
+
+int month[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+bool isleap(int y) {
+	return (y % 400 == 0 || y % 4 == 0 && y % 100 != 0);
+}
+
+int month2day(int y, int m) {
+	if (isleap(y) && m == 2) return 29;
+	return month[m]; 
+}
+
+int str2num(string s) {
+	if (isdigit(s[0])) return stoi(s);
+	for (auto & ch : s) ch = tolower(ch);
+	return name2num[s];
+}
+
+int day2week(int y, int m, int d, int week = 4) {
+	for (int i = 1970; i < y; i++) {
+		int tmp = isleap(i) ? 366 : 365;
+		week = (week + tmp) % 7;
+	}
+	for (int i = 1; i < m; i++) {
+		week = (week + month2day(y, i)) % 7;
+	}
+	return (week + d - 1) % 7; 
+}
+
+ll s, t;
+const int yy = (int)1e8, mm = (int)1e6, dd = (int)1e4, hh = 100;
+string crontab[5];
+unordered_set<int> cmdTime[5];
+
+void splitCmd() {
+	for (int i = 0; i < 5; i++) {
+		cmdTime[i].clear();
+		if (crontab[i] == "*") {
+			int start, over;
+			switch(i) {
+				case 0:
+					start = 0; over = 59;
+					break;
+				case 1:
+					start = 0; over = 23;
+					break;
+				case 2:
+					start = 1; over = 31;
+					break;
+				case 3:
+					start = 1; over = 12;
+					break;
+				case 4:
+					start = 0; over = 6;
+					break;
+			}
+			for (int t = start; t <= over; t++)
+				cmdTime[i].insert(t);
+		}
+		else {
+//			for (int cur = 0, next = 0; ; cur = next + 1) {
+//				next = crontab[i].find(',', cur);
+//				string seg = crontab[i].substr(cur, next == -1 ? -1 : next - cur);
+//				int p = seg.find('-');
+//				int start = str2num(seg.substr(0, p)), over;
+//				if (p == -1) over = start;
+//				else over = str2num(seg.substr(p + 1));
+//				for (int t = start; t <= over; t++)
+//					cmdTime[i].insert(t);
+//				if (next == -1) break;
+//			}
+			stringstream ss(crontab[i]);
+			string seg;
+			while (getline(ss, seg, ',')) {
+				int p = seg.find('-');
+				int start = str2num(seg.substr(0, p)), over;
+				if (p == -1) over = start;
+				else over = str2num(seg.substr(p + 1));
+				for (int t = start; t <= over; t++)
+					cmdTime[i].insert(t);
+			}	
+		}
+	}
+}
+
+map<ll, vector<int>> res;
+
+void calc_Crontab(int c) {
+	for (int y = s / yy; y <= t / yy; y++) {
+		for (int m : cmdTime[3])
+			for (int d : cmdTime[2]) {
+				if (d > month2day(y, m)) continue;
+				if (cmdTime[4].count(day2week(y, m, d))) {
+					for (int h : cmdTime[1])
+						for (int min : cmdTime[0]) {
+							ll tmp = (ll) y * yy + m * mm + d * dd + \
+								h * hh + min;
+							if (s <= tmp && tmp < t)
+								res[tmp].push_back(c);
+						}
+				}
+			} 
+	}
+} 
+int main() {
+	int n;
+	cin >> n >> s >> t;
+	vector<string> cmd(n);
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < 5; j++)
+			cin >> crontab[j];
+		cin >> cmd[i];
+		splitCmd();
+		calc_Crontab(i);
+	}
+	for (auto t : res)
+		for (auto event : t.second)
+			printf("%lld %s\n", t.first, cmd[event].c_str());
+	return 0;
+}
