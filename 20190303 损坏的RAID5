@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 1005;
+const string base = "0123456789ABCDEF";
+string disk[N];
+int n, s, l, maxLen;
+
+int ch2int(char ch) {
+	if ('0' <= ch && ch <= '9') return ch - '0';
+	return ch - 'A' + 10;
+} 
+
+void _xor(string& res, string str) {
+	for (int i = 0; i < str.length(); ++i) {
+		int x = ch2int(res[i]);
+		int y = ch2int(str[i]);
+		res[i] = base[(x ^ y)];
+	}
+}
+
+string get_xor(int id, int _start) {
+	string res(8, '0');
+	for (int i = 0; i < n; ++i)
+		if (i != id)
+			_xor(res, disk[i].substr(_start, 8));
+	return res;
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> n >> s >> l;
+	for (int i = 0; i < l; ++i) {
+		int id;
+		cin >> id;
+		cin >> disk[id];
+		maxLen = disk[id].length();
+	} 
+	
+	int m;
+	cin >> m;
+	while (m--) {
+		int block;
+		cin >> block;
+		int band = block / s;
+		int row = band / (n - 1);
+		int P = (n - 1 - row) % n;
+		int id = (P + 1 + band % (n - 1)) % n;
+		int _start = (block % s + row * s) * 8;
+		if (_start >= maxLen) 
+			cout << "-\n";
+		else if (disk[id].length() == 0 && l < n - 1) 
+			cout << "-\n";
+		else if (disk[id].length() != 0)
+			cout << disk[id].substr(_start, 8) << "\n";
+		else if (disk[id].length() == 0 && l == n - 1) {
+			cout << get_xor(id, _start) << "\n";
+		}
+	}
+	return 0;
+}
