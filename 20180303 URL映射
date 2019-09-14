@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+bool isNum(string& str) {
+	for (char ch : str)
+		if (!isdigit(ch))
+			return false;
+	return true;
+}
+
+string url[110], resource[110];
+int main() {
+	int n, m;
+	scanf("%d%d%*c", &n, &m);
+	string line;
+	for (int i = 0; i < n; i++) {
+		getline(cin, line);
+		int p = line.find(' ');	
+		string patt = line.substr(0, p);
+		patt = regex_replace(patt, regex("<int>"), "(\\d+)");
+		patt = regex_replace(patt, regex("<str>"), "([^/]+)");
+		patt = regex_replace(patt, regex("<path>"), "(.+)");
+		string name = line.substr(p + 1);
+		url[i] = patt;
+		resource[i] = name;
+	}
+	string query;
+	for (int i = 0; i < m; i++) {
+		getline(cin, query);
+		int j = 0;
+		for (; j < n; j++) {
+			smatch sm;
+			if (regex_match(query, sm, regex(url[j]))) {
+				printf("%s", resource[j].c_str());
+				for (int i = 1; i < sm.size(); i++) {
+					string tmp = sm.str(i);
+					if (isNum(tmp))
+						printf(" %d", stoi(tmp));
+					else
+						printf(" %s", tmp.c_str());
+				}
+				printf("\n");
+				break;
+			}
+		}
+		if (j == n) printf("404\n");
+	}
+	return 0;
+}
