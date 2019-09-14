@@ -1,0 +1,52 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	int T, n;
+	scanf("%d%d%*c", &T, &n);
+	string line, item;
+	while (T--) {
+		vector<list<int>> li(n + 1);
+		for (int i = 1; i <= n; i++) {
+			getline(cin, line);
+			stringstream ss(line);
+			while (getline(ss, item, ' ')) {
+				string id = item.substr(1);
+				int num = item[0] == 'R' ? stoi(id) + 1 : -(stoi(id) + 1);
+				li[i].push_back(num);
+			}
+		}
+		
+		bool flag = true;
+		int last = -1, cur = 0;
+		for (int i = 1; true; i = i % n + 1) {
+			if (i == 1) {
+				if (cur == last) {
+					flag = false; 
+					break;
+				}
+				last = cur;	
+			}
+			if (!li[i].empty()) {
+				int j = abs(li[i].front());
+				if (li[j].empty()) {
+					flag = false;
+					break;
+				}
+				if (abs(li[j].front()) == i && ((li[i].front() ^ li[j].front()) < 0)) {
+					li[i].pop_front();
+					li[j].pop_front();
+					cur++;
+				}
+			}
+			//R1应该去list[1]匹配S0 
+		}
+		bool deadlock = false;
+		for (int i = 1; i <= n; i++) {
+			if (!li[i].empty())
+				deadlock = true;
+		}
+		printf("%d\n", deadlock);
+	}
+	return 0;
+}
