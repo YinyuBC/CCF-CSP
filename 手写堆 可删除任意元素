@@ -1,0 +1,87 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct node {
+	int id, score;
+	bool operator > (const node& a) {
+		if (score != a.score) return score > a.score;
+		return id < a.id;
+	}
+};
+struct pq {
+	vector<node> heap = {{0, 0}};
+	unordered_map<int, int> pos;
+	int n = 0;
+	
+	void up(int p) {
+		while (p > 1) {
+			if (heap[p] > heap[p / 2]) {
+				swap(heap[p], heap[p / 2]);
+				swap(pos[heap[p].id], pos[heap[p / 2].id]);
+				p /= 2;
+			} 
+			else break;
+		}
+	}
+	
+	void down(int p) {
+		int s = p * 2;
+		while (s <= n) {
+			if (s < n && heap[s + 1] > heap[s]) s++;
+			if (heap[s] > heap[p]) {
+				swap(heap[s], heap[p]);
+				swap(pos[heap[s].id], pos[heap[p].id]);
+				p = s, s = p * 2;
+			}
+			else break;
+		}
+	}
+	
+	bool empty() {
+		return n == 0;
+	}
+	
+	node top() {
+		return heap[1];
+	}
+	
+	void insert(node val) {
+		heap.push_back(val);
+		pos[val.id] = ++n; 
+		up(n);
+	}
+	
+	void pop() {
+		heap[1] = heap[n--];
+		pos[heap[1].id] = 1;
+		down(1);
+	}
+	
+	void remove(int val) {
+		int k = pos[val];
+		heap[k] = heap[n--];
+		pos[heap[k].id] = k;
+		up(k), down(k);
+	}	
+}; 
+
+int main() {
+	pq a;
+	vector<node> b = {{1100, 24}, {3214, 4124}, {23, 43}, {341, 129894}, {1247, 34172874}, {127, 412}, {126, 412}};
+	for (auto num : b) {
+		a.insert(num);
+	}
+
+//	a.remove(43);
+//	a.remove(3214);
+//	a.remove(4124);
+//	a.remove(1100);
+	
+//	a.remove(3214);
+	while (!a.empty()) {
+		cout << a.top().id << " " << a.top().score << " " << a.n << "\n";
+		a.pop();
+	}
+	
+	return 0;
+}
