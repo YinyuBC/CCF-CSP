@@ -1,0 +1,78 @@
+#include <bits/stdc++.h>
+#define N 55
+using namespace std;
+
+struct node {
+	int _group, _id, _score;
+};
+
+struct functor {
+	bool operator () (const node& a, const node& b) const {
+		if (a._score != b._score) return a._score > b._score;
+		if (a._group != b._group) return a._group < b._group;
+		return a._id < b._id;
+	}
+};
+
+set<node, functor> bst;
+unordered_map<int, int> dict[N];
+
+int main() {
+	int m, n;
+	cin >> m >> n;
+	int id, score;
+	for (int j = 1; j <= n; j++) {
+		cin >> id >> score;
+		for (int i = 0; i < m; i++) {
+			bst.insert({i, id, score});
+			dict[i][id] = score;
+		}
+	}
+	
+	int op;
+	cin >> op;
+	
+	for (int j = 0; j < op; j++) {
+		int type, group;
+		
+		cin >> type;
+		if (type == 1) {
+			cin >> group >> id >> score;
+			bst.insert({group, id, score});
+			dict[group][id] = score;
+		}
+		else if (type == 2) {
+			cin >> group >> id;
+			bst.erase({group, id, dict[group][id]});
+			dict[group].erase(id);
+		}
+		else if (type == 3) {
+			int sum;
+			cin >> sum;
+			vector<int> k(m);
+			for (int i = 0; i < m; i++)
+				cin >> k[i];
+			
+			vector<int> res[m];
+			for (auto item : bst) {
+				if (sum == 0) break;
+				group = item._group;
+				id = item._id;
+				if(k[group] > 0) {
+					res[group].push_back(id);
+					k[group]--;
+					sum--;
+				}
+			}
+			
+			for (int i = 0; i < m; i++) {
+				if (res[i].empty())
+					cout << "-1\n";
+				for (auto item : res[i]) {
+					printf("%d%s", item, item == res[i].back() ? "\n" : " ");
+				}
+			}
+		}
+	}
+	return 0;
+} 
