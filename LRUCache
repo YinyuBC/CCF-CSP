@@ -1,0 +1,59 @@
+//LRUCache
+#include <bits/stdc++.h>
+using namespace std;
+
+class LRUCache {
+public:
+	LRUCache(int capacity) {
+		size = capacity;
+	}
+	int front() {
+		return cache.front();
+	} 
+	
+	int back() {
+		return cache.back();
+	}
+	
+	void insert(int tag) {
+		auto it = cacheMap.find(tag);
+		
+		if (it != cacheMap.end()) {
+			auto pos = it->second;
+			cache.erase(pos);
+			cache.push_front(tag);
+			cacheMap[tag] = cache.begin(); 
+		}
+		else {
+			if (size == cache.size()) {
+				int del = cache.back();
+				cache.pop_back();
+				cacheMap.erase(del);
+			}
+			
+			cache.push_front(tag);
+			cacheMap[tag] = cache.begin();
+		}
+	}
+	
+	void print() {
+		for (int tag : cache) {
+			printf("%d%s", tag, tag == cache.back() ? "\n" : "->");
+		}
+	}
+private:
+	int size;
+	list<int> cache;
+	unordered_map<int, list<int>::iterator> cacheMap; 
+};
+
+int main() {
+	LRUCache ca(5);
+	for (int i = 0; i < 100; i++) {
+		int tag = rand() % 10;
+		ca.insert(tag);
+		printf("tag = %d : front = %d, back = %d\n", tag, ca.front(), ca.back());
+		ca.print();
+	}
+	return 0;
+}
